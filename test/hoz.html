@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HOZ CEM</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <script src="http://style.alibaba.com/js/5v/lib/aelite/aelite.js"></script>
+        <script src="../src/HOZ/cem.js"></script>
+        <script>
+            AE.use(['common.cem', 'core'], function(cem, core){
+                // 全局域
+                cem.subscribe('testGlobal', function(e, args){
+                    console.log('global global');
+                    console.log(arguments);
+                });
+                cem.trigger('testGlobal', {
+                    test: 'global'
+                });
+                cem.subscribe('testNamed', function(){
+                    console.log('global named');
+                    console.log(arguments);
+                });
+                cem.subscribe('testUnnamed', function(){
+                    console.log('global unnamed');
+                    console.log(arguments);
+                });
+                // 命名域
+                var cemNamed = cem.domain('test');
+                cemNamed.subscribe('testNamed', function(){
+                    console.log('named named');
+                    console.log(arguments);
+                });
+                cemNamed.trigger('testNamed', {
+                    test: 'named'
+                });
+                // 未名域
+                var cemUnnamed = cem.domain();
+                // 订阅全局testNamed
+                cem.subscribe('testNamed', function(){
+                    console.log('global unnamed named');
+                    console.log(arguments);
+                }, true);
+                cemUnnamed.trigger('testUnnamed', {
+                    test: 'unnamed'
+                });
+                cemUnnamed.subscribe('testUnnamed', function(){
+                    console.log('unnamed unnamed');
+                    console.log(arguments);
+                }, true);
+                
+                cem.trigger('testNamed', {
+                    test: 'global'
+                });
+                
+                cem.domain('test').trigger('testNamed', {
+                    test: 'named'
+                });
+                
+                // test obj
+                var obj = new (core.extend(core.Base, {})); // must extend core.Base
+                cem.domain('testObj', obj);
+                obj.trigger('testObj', {
+                    test: 'obj'
+                });
+                obj.subscribe('testObj', function(){
+                    console.log('obj obj');
+                    console.log(arguments);
+                }, true);
+            });
+            
+            AE.use(['common.cem'], function(cem){
+                cem.subscribe('testGlobal', function(e, args){
+                    console.log('global global');
+                    console.log(arguments);
+                }, true);
+            });
+        </script>
+    </body>
+</html>
